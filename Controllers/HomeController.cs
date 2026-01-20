@@ -7,7 +7,7 @@ using SafeVault.Services;
 
 namespace SafeVault.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : SecureController
     {
         private readonly UserRepository _userRepository;
 
@@ -19,8 +19,18 @@ namespace SafeVault.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            var redirect = RequireLogin();
+            if (redirect != null) return redirect;
+            
             return View("WebForm");
         }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
 
         [HttpPost("/submit")]
         public IActionResult Submit(string username, string email)
@@ -52,7 +62,7 @@ namespace SafeVault.Controllers
             };
 
             // Save securely with parameterized query
-            _userRepository.InsertUser(user);
+            _userRepository.InsertUserWithPassword(user);
 
             ViewData["Message"] = "User saved securely.";
             return View("WebForm");

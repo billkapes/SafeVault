@@ -13,20 +13,22 @@ namespace SafeVault.Data
             _connectionString = options.Value.ConnectionString;
         }
 
-        public void InsertUser(User user)
+        public void InsertUserWithPassword(User user)
         {
             using var conn = new MySqlConnection(_connectionString);
             conn.Open();
 
             const string sql = @"
-                INSERT INTO Users (Username, Email)
-                VALUES (@username, @email);
+                INSERT INTO Users (Username, Email, PasswordHash, PasswordSalt, Role)
+                VALUES (@username, @email, @hash, @salt, @role);
             ";
 
             using var cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@username", user.Username);
             cmd.Parameters.AddWithValue("@email", user.Email);
-
+            cmd.Parameters.AddWithValue("@hash", user.PasswordHash);
+            cmd.Parameters.AddWithValue("@salt", user.PasswordSalt);
+            cmd.Parameters.AddWithValue("@role", user.Role);
             cmd.ExecuteNonQuery();
         }
 
@@ -36,7 +38,7 @@ namespace SafeVault.Data
             conn.Open();
 
             const string sql = @"
-                SELECT UserID, Username, Email
+                SELECT UserID, Username, Email, PasswordHash, PasswordSalt, Role
                 FROM Users
                 WHERE Username = @username
                 LIMIT 1;
@@ -52,7 +54,10 @@ namespace SafeVault.Data
                 {
                     UserID = reader.GetInt32("UserID"),
                     Username = reader.GetString("Username"),
-                    Email = reader.GetString("Email")
+                    Email = reader.GetString("Email"),
+                    PasswordHash = (byte[])reader["PasswordHash"],
+                    PasswordSalt = (byte[])reader["PasswordSalt"],
+                    Role = reader.GetString("Role"),
                 };
             }
 

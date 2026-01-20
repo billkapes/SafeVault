@@ -14,6 +14,13 @@ builder.Services.Configure<DatabaseConfig>(
 
 builder.Services.AddScoped<UserRepository>();
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,9 +33,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseSession();
+
 app.UseRouting();
 
 app.UseAuthorization();
+
 
 // Default route – Home/Index, plus /submit from controller
 app.MapControllerRoute(
