@@ -4,11 +4,9 @@ namespace SafeVault.Controllers
 {
     public class SecureController : Controller
     {
-        protected bool IsLoggedIn =>
-            HttpContext.Session.GetInt32("UserID") != null;
+        protected bool IsLoggedIn => HttpContext.Session.GetInt32("UserID") != null;
 
-        protected string? UserRole =>
-            HttpContext.Session.GetString("Role");
+        protected string? UserRole => HttpContext.Session.GetString("Role");
 
         protected IActionResult RequireLogin()
         {

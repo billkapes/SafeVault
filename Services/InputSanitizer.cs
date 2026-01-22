@@ -10,21 +10,10 @@ namespace SafeVault.Services
                 return string.Empty;
 
             // Remove HTML tags (basic XSS mitigation)
-            input = Regex.Replace(input, "<.*?>", string.Empty, RegexOptions.Singleline);
+            input = Regex.Replace(input, "<[^>]+>", string.Empty);
 
             // Normalize whitespace
             input = Regex.Replace(input, @"\s+", " ");
-
-            // Remove some common SQL injection characters/patterns
-            var blackList = new[]
-            {
-                "'", "\"", "--", ";", "/*", "*/", "xp_"
-            };
-
-            foreach (var item in blackList)
-            {
-                input = input.Replace(item, string.Empty, StringComparison.OrdinalIgnoreCase);
-            }
 
             return input.Trim();
         }

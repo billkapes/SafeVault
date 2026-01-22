@@ -7,7 +7,8 @@ namespace SafeVault.Controllers
         public IActionResult Dashboard()
         {
             var redirect = RequireRole("admin");
-            if (redirect != null) return redirect;
+            if (redirect != null)
+                return redirect;
 
             return View();
         }
